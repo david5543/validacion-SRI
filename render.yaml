@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: validacion-sri
+    runtime: docker
+    plan: free
+    autoDeployTrigger: commit

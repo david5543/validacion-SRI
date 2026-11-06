@@ -1,6 +1,6 @@
 # validacion-SRI
 
-Microservicio que simula la validación de comprobantes del SRI de Ecuador para el sistema FacturaEC. Es una Edge Function de Supabase (Deno y TypeScript).
+Microservicio que simula la validación de comprobantes del SRI de Ecuador para el sistema FacturaEC, escrito en Deno y TypeScript. Se despliega en Render o como Edge Function de Supabase.
 
 Valida la clave de acceso de 49 dígitos según la ficha técnica del esquema offline del SRI (versión 2.34): estructura, fecha, tipo de comprobante, ambiente, tipo de emisión y dígito verificador módulo 11. No recibe el XML ni la firma del comprobante, no guarda estado y no contacta al SRI real.
 
@@ -43,7 +43,27 @@ curl -i -X POST http://localhost:54321/functions/v1/sri-gateway \
 
 La clave del ejemplo usa un RUC ficticio.
 
-## Despliegue
+## Despliegue en Render
+
+`render.yaml` crea un servicio web gratuito con el `Dockerfile` del repositorio. En Render, elija **New → Blueprint** y seleccione este repositorio. Cada commit en `main` vuelve a desplegar el servicio.
+
+El servicio atiende en cualquier ruta y no exige credenciales: cualquiera que conozca la URL puede invocarlo. No guarda datos.
+
+El backend solo necesita esta variable (deje `SUPABASE_ANON_KEY` sin definir):
+
+```bash
+SRI_GATEWAY_URL=https://<nombre-del-servicio>.onrender.com
+```
+
+En el plan gratuito, el servicio se apaga tras 15 minutos sin tráfico y tarda cerca de un minuto en volver a arrancar. Por eso, el primer envío después de una pausa puede dejar la factura `PENDIENTE`; al reenviarla, se autoriza.
+
+Para ejecutarlo en local con Deno:
+
+```bash
+PORT=8000 deno run --allow-net --allow-env=PORT servidor.ts
+```
+
+## Despliegue en Supabase
 
 ```bash
 npx supabase login
